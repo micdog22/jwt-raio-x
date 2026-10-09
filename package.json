@@ -1,0 +1,11 @@
+{
+  "name": "jwt-raio-x",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Inspecione tokens JWT sem enviá-los a nenhum servidor: claims explicadas, alertas e verificação de assinatura no navegador.",
+  "type": "module",
+  "scripts": { "test": "node --test" },
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/micdog22/jwt-raio-x.git" },
+  "homepage": "https://micdog22.github.io/jwt-raio-x/"
+}

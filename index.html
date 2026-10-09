@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JWT Raio-X — inspecione tokens JWT sem enviá-los para nenhum servidor</title>
+  <meta name="description" content="Decodifique tokens JWT, entenda cada claim em português, veja alertas de segurança e verifique a assinatura (HS, RS, PS e ES) direto no navegador.">
+  <meta name="theme-color" content="#6d28d9">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩻</text></svg>">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1>JWT Raio-X</h1>
+    <p class="lead">Inspecione tokens JWT sem enviá-los para nenhum servidor.</p>
+  </header>
+
+  <main>
+    <p class="local-note">
+      <strong>Nada sai do seu navegador.</strong>
+      O token é decodificado e verificado aqui mesmo. Ainda assim, evite colar tokens de produção válidos em ferramentas que você não conhece.
+    </p>
+
+    <div class="tabs" role="tablist" aria-label="Modo">
+      <button type="button" role="tab" id="tab-inspect" aria-selected="true" aria-controls="panel-inspect">Inspecionar</button>
+      <button type="button" role="tab" id="tab-generate" aria-selected="false" aria-controls="panel-generate" tabindex="-1">Gerar token de teste</button>
+    </div>
+
+    <section id="panel-inspect" role="tabpanel" aria-labelledby="tab-inspect">
+      <div class="card">
+        <label for="token">Token JWT</label>
+        <textarea id="token" rows="5" spellcheck="false" autocomplete="off" autocapitalize="off"
+                  placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></textarea>
+        <div class="row">
+          <button type="button" class="btn secondary" id="load-example">Carregar exemplo</button>
+          <button type="button" class="btn secondary" id="clear-token">Limpar</button>
+        </div>
+        <p id="token-status" class="status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div id="warnings" class="warnings" aria-live="polite"></div>
+
+      <div id="decoded" hidden>
+        <div class="two-columns">
+          <section class="card" aria-labelledby="header-title">
+            <h2 id="header-title">Cabeçalho</h2>
+            <pre class="json" id="header-json" tabindex="0" aria-label="Cabeçalho decodificado"></pre>
+            <dl class="fields" id="header-fields"></dl>
+          </section>
+          <section class="card" aria-labelledby="payload-title">
+            <h2 id="payload-title">Payload</h2>
+            <pre class="json" id="payload-json" tabindex="0" aria-label="Payload decodificado"></pre>
+          </section>
+        </div>
+
+        <section class="card" id="claims-card" aria-labelledby="claims-title">
+          <h2 id="claims-title">Claims explicadas</h2>
+          <dl class="claims" id="claims"></dl>
+        </section>
+
+        <section class="card" id="signature-card" aria-labelledby="signature-title">
+          <h2 id="signature-title">Assinatura</h2>
+          <p class="signature" id="signature"></p>
+          <h3>Verificar assinatura</h3>
+          <p class="muted small" id="verify-hint"></p>
+          <label for="key" id="key-label">Segredo</label>
+          <textarea id="key" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+          <div class="row align-end">
+            <div id="encoding-field" class="inline-field">
+              <label for="secret-encoding">O segredo está em</label>
+              <select id="secret-encoding">
+                <option value="text">texto</option>
+                <option value="base64">Base64</option>
+              </select>
+            </div>
+            <button type="button" class="btn" id="verify">Verificar</button>
+          </div>
+          <div id="verify-result" class="verify-result" aria-live="polite"></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="panel-generate" role="tabpanel" aria-labelledby="tab-generate" hidden>
+      <div class="card">
+        <p class="muted">Monte um token HS256 para testar sua API ou biblioteca. Não use em produção.</p>
+        <label for="gen-header">Cabeçalho (JSON)</label>
+        <textarea id="gen-header" rows="4" spellcheck="false"></textarea>
+        <label for="gen-payload" class="spaced">Payload (JSON)</label>
+        <textarea id="gen-payload" rows="8" spellcheck="false"></textarea>
+        <label for="gen-secret" class="spaced">Segredo (texto)</label>
+        <div class="input-row">
+          <input id="gen-secret" type="text" spellcheck="false" autocomplete="off">
+          <button type="button" class="btn secondary" id="gen-random">Gerar segredo aleatório</button>
+        </div>
+        <div class="row">
+          <button type="button" class="btn" id="generate">Gerar token HS256</button>
+        </div>
+        <div id="gen-status" class="status" aria-live="polite"></div>
+        <label for="gen-output" class="spaced">Token gerado</label>
+        <textarea id="gen-output" rows="4" readonly spellcheck="false"></textarea>
+        <div class="row">
+          <button type="button" class="btn secondary" id="gen-copy">Copiar token</button>
+          <button type="button" class="btn secondary" id="gen-inspect">Abrir no inspetor</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card explain" aria-labelledby="about-title">
+      <h2 id="about-title">Como ler um JWT</h2>
+      <p>
+        Um JWT tem três partes separadas por ponto: <strong>cabeçalho</strong>, <strong>payload</strong> e <strong>assinatura</strong>.
+        As duas primeiras são JSON codificado em Base64URL. Isso é só uma codificação, <strong>não é criptografia</strong>:
+        qualquer pessoa com o token lê o conteúdo. Por isso, nunca coloque senhas ou dados sensíveis no payload.
+      </p>
+      <ul>
+        <li>A assinatura garante que o conteúdo não foi alterado, mas só tem valor se o servidor a verificar com a chave certa e recusar <code>alg: none</code>.</li>
+        <li>As datas (<code>exp</code>, <code>nbf</code>, <code>iat</code>) são segundos desde 01/01/1970 (UTC). Aqui elas aparecem no seu horário local.</li>
+        <li>Tokens com 5 partes são JWE: o conteúdo é criptografado e só o destinatário consegue ler.</li>
+        <li>HS256, HS384 e HS512 usam um segredo compartilhado. RS, PS e ES usam um par de chaves: a chave privada assina e a pública verifica.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Tudo roda no seu navegador. Código aberto no <a href="https://github.com/micdog22/jwt-raio-x">GitHub</a> · Licença MIT</p>
+  </footer>
+</body>
+</html>
