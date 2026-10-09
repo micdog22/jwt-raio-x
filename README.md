@@ -1,4 +1,4 @@
-# JWT Raio-X — inspecione tokens JWT sem enviá-los para nenhum servidor (HTML + JavaScript)
+# JWT Raio-X: inspecione tokens JWT sem enviá-los para nenhum servidor (HTML + JavaScript)
 
 Quem trabalha com APIs vive colando tokens JWT em sites para ver o que tem dentro. O problema é que um token válido é uma credencial: mandá-lo para um servidor de terceiros é um risco. O JWT Raio-X decodifica, explica e verifica o token inteiramente no navegador.
 
@@ -65,4 +65,4 @@ Issues e pull requests são bem-vindos.
 
 ## Licença
 
-MIT — veja [LICENSE](LICENSE).
+MIT. Veja [LICENSE](LICENSE).
